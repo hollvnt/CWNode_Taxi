@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Детали поездки</title>
+    <link rel="icon" href="/picture/icon.ico" type="image/x-icon">
+    <script>
+      function showNotification(message) {
+        const notification = document.createElement('div');
+        notification.className = 'notification';
+        notification.textContent = message;
+        document.body.appendChild(notification);
+        setTimeout(() => {
+          document.body.removeChild(notification);
+          window.location.href = '/api/driverPage';
+        }, 5000);
+      }
+    </script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2; 
+        text-align: center;
+      } 
+      h1 {
+        color: #333333;
+        text-align: center;
+      }
+      p {
+        margin: 10px 0; 
+      }
+      strong {
+        font-weight: bold;
+      }
+      .button-container {
+        display: flex;
+        justify-content: center;
+      }
+      button {
+        background-color: #4CAF50;
+        border: none;
+        color: white;
+        padding: 10px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 10px;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+      button.cancel {
+        background-color: #FF0000;
+      }
+      button:hover {
+        background-color: #3e8e41;
+      }
+      button.cancel:hover{
+        background-color: #b30303;
+      }
+      .notification {
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 9999;
+    opacity: 0;
+    animation: fade-in 0.5s ease forwards;
+  }
+  .notification.cancel {
+    background-color: #FF0000 !important;
+  }
+  .notification.hide {
+    animation: fade-out 0.5s ease forwards;
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -20px);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+  }
+
+  @keyframes fade-out {
+    from {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+    to {
+      opacity: 0;
+      transform: translate(-50%, -20px);
+    }
+  }
+    </style>
+  </head>
+  <body>
+    <h1>Активный заказ</h1>
+    <div class="order-details" > 
+      <p><strong>Откуда:</strong> <%= order.AdressFrom %></p>
+      <p><strong>Куда:</strong> <%= order.AdressTo %></p>
+      <p><strong>Дата:</strong> <%= order.OrderDate %></p>
+      <p><strong>Время:</strong> <%= order.OrderTime %></p>
+      <p><strong>Комментарий:</strong> <%= order.OrderComment %></p>
+      <p><strong>Цена:</strong> <%= order.OrderCost %></p>
+      <p><strong>Статус заказа:</strong> <%= order.OrderStatus %></p>
+      <p><strong>Тариф:</strong> <%= order.TariffName %></p> 
+    </div>
+    <% if (order.OrderStatus === 'Выполняется') { %>
+      <div class="button-container">
+        <form action="/api/confirmOrder" method="POST" onsubmit="showNotification('Вы завершили поездку!')">
+          <input type="hidden" name="OrderID" value="<%= order.OrderID %>">
+          <button type="submit">Завершить</button>
+        </form>
+        <form action="/api/cancelOrder" method="POST" onsubmit="showNotification('Вы отмененили поездку!')">
+          <input type="hidden" name="OrderID" value="<%= order.OrderID %>">
+          <button type="submit" class="cancel">Отменить</button>
+        </form>
+      </div>
+    <% } %>
+  </body>
+</html>

@@ -1,0 +1,39 @@
+body {
+    padding: 20px;
+  }
+
+  h1 {
+    margin-bottom: 30px;
+    text-align: center;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+
+  th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+  }
+
+  .btn {
+    padding: 6px 12px;
+    margin-right: 5px;
+  }
+
+  .btn-primary {
+    background-color: #fad711;
+    border-color: #e6c408;
+  }
+
+  .btn-primary:hover {
+    background-color: #fad711;
+    border-color: #e6c408; 
+  }

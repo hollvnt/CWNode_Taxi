@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Авторизация</title> 
+  <link rel="stylesheet" href="/index.css"> 
+  <link rel="icon" href="/picture/icon.ico" type="image/x-icon">
+  <style>
+   
+  </style>
+</head>
+<body>
+  <h2 style="text-align: center; font-family: sans-serif; padding-top: 20px;">Такси Гермес - мы доставляем богов на олимп</h2>
+  <div id="login-container"> 
+    <img src="/picture/free-icon-taxi-2077143.png">
+    <h2 class="auth">Авторизация</h2>
+    <form method="post" action="/api/login">
+      <div class="input-wrapper">
+        <input type="email" placeholder="Email" id="UserEmail" name="UserEmail" required>
+      </div><br>
+      <div class="input-wrapper">
+        <input type="password" placeholder="Пароль" id="UserPassword" name="UserPassword" required>
+      </div>
+      <br><br>
+      <input type="submit" value="Войти" class="floating-button">
+      <br>
+      <a class="link" href="https://localhost/api/register">Зарегистрируйся!</a> 
+      <a class="link" href="https://localhost/api/becomeDriver">Стань водителем</a>
+      <a class="link" href="https://localhost/api/driverLogin">Войти как водитель</a>
+    </form>
+
+    <script> 
+      const urlParams = new URLSearchParams(window.location.search);
+      const errorMessage = urlParams.get('error');
+    
+      if (errorMessage) {
+        showNotification(errorMessage);
+        history.replaceState(null, document.title, window.location.pathname);
+      }
+    
+      function showNotification(message) {
+        const notification = document.createElement('div');
+        notification.classList.add('notification');
+        notification.textContent = message;
+        document.body.appendChild(notification);
+    
+        setTimeout(function () {
+          notification.classList.add('hide');
+          setTimeout(function () {
+            document.body.removeChild(notification);
+          }, 500);
+        }, 5000);
+      }
+    </script>
+    
+    
+    
+    
+    
+</body>
+</html>

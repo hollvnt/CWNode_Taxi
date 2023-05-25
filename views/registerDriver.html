@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Регистрация водителя</title>
+  <link rel="icon" href="/picture/icon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="/registerDriver.css"> 
+  <style> 
+  </style>
+  <script>
+    function showMessage(message, isSuccess) {
+      const notification = document.getElementById('notification');
+      notification.innerText = message;
+      notification.classList.add(isSuccess ? 'success' : 'error');
+      notification.style.display = 'block';
+
+      setTimeout(() => {
+        notification.style.display = 'none';
+        notification.classList.remove(isSuccess ? 'success' : 'error');
+      }, 5000);
+    }
+  </script>
+</head>
+<body>
+  <div id="login-container">
+    <img src="/picture/free-icon-archive-1006516.png"> 
+    <h1>Регистрация водителя</h1>
+    <form action="/api/becomeDriver" method="POST" onsubmit="event.preventDefault(); submitForm();">
+      <div class="input-wrapper">
+        <label for="email">Email:</label>
+        <input type="email" name="UserEmail" required placeholder="Почта">
+      </div>
+      <br>
+      <div class="input-wrapper">
+        <label for="password">Пароль:</label>
+        <input type="password" name="UserPassword" required placeholder="Пароль">
+      </div>
+      <br>
+      <button class="floating-button" type="submit">Зарегистрироваться как водитель</button></br></br>
+      <a class="link" href="https://localhost/">Вернуться на главную</a></br>
+    </form>
+    <div id="notification" class="notification"></div>
+    <script>
+      async function submitForm() {
+        const form = document.querySelector('form');
+        const email = form.elements['UserEmail'].value;
+        const password = form.elements['UserPassword'].value;
+
+        const response = await fetch('/api/becomeDriver', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ UserEmail: email, UserPassword: password })
+        });
+
+        const result = await response.json();
+
+        if (result.error) {
+          showMessage(result.error, false);
+        } else {
+          showMessage('Регистрация прошла успешно', true);
+          setTimeout(() => {
+            window.location.href = 'https://localhost';
+          }, 5000);
+        }
+      }
+    </script>
+  </div>
+</body>
+</html>

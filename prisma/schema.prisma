@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model Cars {
+  CarID        Int      @id(map: "PK__Cars__68A0340E1C09C8FE") @default(autoincrement())
+  DriverID     Int
+  Make         String   @db.NVarChar(50)
+  Model        String   @db.NVarChar(50)
+  Year         Int
+  Color        String   @db.NVarChar(50)
+  LicensePlate String   @unique(map: "UQ__Cars__026BC15C329AFB86") @db.NVarChar(8)
+  TariffID     Int?
+  Drivers      Drivers  @relation(fields: [DriverID], references: [DriverID], onUpdate: NoAction, map: "FK__Cars__DriverID__4F7CD00D")
+  Tariffs      Tariffs? @relation(fields: [TariffID], references: [TariffID], onDelete: NoAction, onUpdate: NoAction, map: "FK__Cars__TariffID__5070F446")
+}
+
+model Drivers {
+  DriverID           Int      @id(map: "PK__Drivers__F1B1CD2407CC6BE5") @default(autoincrement())
+  DriverCar          String   @db.NVarChar(50)
+  DriverLicensePlate String   @db.NVarChar(20)
+  UserID             Int
+  DriverAvatar       Bytes?
+  Role               String?  @db.NVarChar(50)
+  Cars               Cars[]
+  Users              Users    @relation(fields: [UserID], references: [UserID], onUpdate: NoAction, map: "FK__Drivers__UserID__267ABA7A")
+  Orders             Orders[]
+}
+
+model Orders {
+  OrderID      Int      @id(map: "PK__Orders__C3905BAFA1EFB2DE") @default(autoincrement())
+  UserID       Int
+  DriverID     Int
+  AdressFrom   String   @db.NVarChar(100)
+  AdressTo     String   @db.NVarChar(100)
+  OrderTime    DateTime @db.Time
+  OrderDate    DateTime @db.Date
+  OrderComment String?  @db.NVarChar(200)
+  OrderTariff  Int
+  OrderCost    Float    @db.Money
+  OrderStatus  String   @db.NVarChar(50)
+  Drivers      Drivers  @relation(fields: [DriverID], references: [DriverID], onUpdate: NoAction, map: "FK__Orders__DriverID__2C3393D0")
+  Tariffs      Tariffs  @relation(fields: [OrderTariff], references: [TariffID], onUpdate: NoAction, map: "FK__Orders__OrderTar__2D27B809")
+  Users        Users    @relation(fields: [UserID], references: [UserID], onUpdate: NoAction, map: "FK__Orders__UserID__2B3F6F97")
+}
+
+model Role {
+  RoleID   Int    @id(map: "PK__Role__8AFACE3AC08F83A7") @default(autoincrement())
+  RoleName String @db.NVarChar(50)
+}
+
+model sysdiagrams {
+  name         String @db.NVarChar(128)
+  principal_id Int
+  diagram_id   Int    @id(map: "PK__sysdiagr__C2B05B6113D044B6") @default(autoincrement())
+  version      Int?
+  definition   Bytes?
+
+  @@unique([principal_id, name], map: "UK_principal_name")
+}
+
+model Tariffs {
+  TariffID   Int      @id(map: "PK__Tariffs__EBAF9D936D07B671") @default(autoincrement())
+  TariffName String   @db.NVarChar(50)
+  Cars       Cars[]
+  Orders     Orders[]
+}
+
+model Users {
+  UserID       Int       @id(map: "PK__Users__1788CCACF0A5C6AB") @default(autoincrement())
+  UserName     String    @db.NVarChar(50)
+  UserLastName String    @db.NVarChar(50)
+  UserEmail    String    @db.NVarChar(100)
+  UserPhone    String    @db.NVarChar(20)
+  UserPassword String    @db.NVarChar(100)
+  UserAvatar   Bytes?
+  UserImage    Bytes?
+  UserImages   String?   @db.NVarChar(50)
+  Role         String?   @db.NVarChar(50)
+  Drivers      Drivers[]
+  Orders       Orders[]
+}

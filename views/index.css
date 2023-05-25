@@ -1,0 +1,197 @@
+.hidden {
+    display: none;
+  }
+
+  #login-container {
+  background-color: white;
+  font-family: 'Montserrat', sans-serif;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+  height: 550px;
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  margin: 100px auto;
+  border-radius: 20px;
+  text-align: center;
+}
+
+.auth {
+  text-align: center;
+}
+
+#login-container label {
+  display: inline-block;
+  text-align: left;
+  width: 175px; /* можно задать фиксированную ширину label, чтобы выровнять все инпуты по одной линии */
+  padding: 10px;
+}
+
+.floating-button {
+  display: inline-block;
+  padding: 12px 25px;
+  border-radius: 30px;
+  margin: 10px 20px;
+  width: 140px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 12px;
+  text-transform: uppercase;
+  text-align: center;
+  font-weight: 600;
+  color:#524f4e;;
+  background-color: #ffffff;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, .1);
+  transition: .3s;
+  border: none;
+  cursor: pointer;
+}
+
+.floating-button:hover {
+  background: #e2e52e;
+  color: white;
+  box-shadow: 0 15px 20px rgba(229, 211, 46, 0.4);
+  transform: translateY(-7px);
+}
+
+.input-wrapper {
+  position: relative;
+  margin: 10px 20px;
+  height: 25px;
+}
+
+.input-wrapper input {
+  position: absolute;
+  top: 0;
+  left: 80px;
+  width: 50%;
+  padding: 10px;
+  border: none;
+  border-radius: 25px;
+  background-color: white;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px;
+  color: #524f4e;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.input-wrapper input:focus {
+  outline: none;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+img{
+    height: 164px; 
+    width: 164px;
+    text-align: center ;
+    padding-left: 120px;
+    padding-top: 10px;
+}
+
+.link {
+  color: #524f4e;
+  text-decoration: none;
+  font-family: sans-serif;
+  font-size: 12px;
+  text-transform: uppercase;
+  margin-top: 10px;
+  display: block;
+}
+
+.link:hover {
+  color: #e2e52e;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f2f2f2;
+  text-align: center;
+}
+
+h1 {
+  color: #333333;
+  text-align: center;
+}
+
+p {
+  margin: 10px 0;
+}
+
+strong {
+  font-weight: bold;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+}
+
+button {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+button.cancel {
+  background-color: #FF0000;
+}
+
+button:hover {
+  background-color: #3e8e41;
+}
+
+button.cancel:hover {
+  background-color: #b30303;
+}
+
+.notification {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  z-index: 9999;
+  opacity: 0;
+  animation: fade-in 0.5s ease forwards;
+}
+
+.notification.cancel {
+  background-color: #FF0000 !important;
+}
+
+.notification.hide {
+  animation: fade-out 0.5s ease forwards;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
+}

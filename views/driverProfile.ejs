@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Профиль водителя</title>
+    <link rel="icon" href="/picture/icon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <style> 
+ body {
+            padding: 20px;
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .card {
+            margin-top: 20px;
+            border: none;
+        }
+        .card-body {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .card-text {
+            margin-bottom: 10px;
+            color: #555;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .btn-primary {
+            margin-right: 10px;
+        }
+        .notification {
+            position: fixed;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .show-notification {
+            opacity: 1;
+        }
+        .success-message {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px;
+            font-size: 20px;
+            text-align: center;
+            color: white;
+            background-color: rgb(13, 175, 13);
+            animation: slideDown 0.5s ease-out;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 style="text-align: center;">Профиль водителя</h2> 
+        <a class="btn btn-primary" href="https://localhost/api/driverPage" style="position: absolute; top: 20px; left: 20px;">Главная</a>
+        <a class="btn btn-primary" href="https://localhost/api/driverLogin" style="position: absolute; top: 20px; left: 120px;">Выйти</a>
+        <div class="card">
+            <div class="card-body">
+                <% if (driver && driver.Users) { %>
+                    <p class="card-text"><strong>Имя:</strong> <%= driver.Users.UserName %></p>
+                    <p class="card-text"><strong>Фамилия:</strong> <%= driver.Users.UserLastName %></p>
+                    <p class="card-text"><strong>Email:</strong> <%= driver.Users.UserEmail %></p>
+                    <p class="card-text"><strong>Телефон:</strong> <%= driver.Users.UserPhone %></p>
+                <% } else { %>
+                    <p class="card-text">Данные пользователя не доступны.</p>
+                <% } %>
+                
+                <% if (driver.Cars && driver.Cars.length > 0) { %>
+                  <h4>Автомобиль</h4> 
+                  <% driver.Cars.forEach(function(car) { %>
+                    <p><strong>Марка:</strong> <%= car.Make %></p> 
+                    <p><strong>Модель:</strong> <%= car.Model %></p>
+                    <p><strong>Год:</strong> <%= car.Year %></p>
+                    <p><strong>Цвет:</strong> <%= car.Color %></p>
+                    <p><strong>Номерной знак:</strong> <%= car.LicensePlate %></p>
+                    <p><strong>Тариф:</strong> <%= car.Tariffs.TariffName %></p>
+                  <% }); %> 
+                <% } %>
+                
+                <button class="btn btn-primary" id="editProfileBtn">Изменить</button> 
+
+                <form id="editProfileForm" style="display: none;" method="POST" action="/api/driverUpdateProfile">
+                  <div class="form-group">
+                    <label for="userName">Имя</label>
+                    <input type="text" class="form-control" id="userName" name="UserName" value="<%= driver.Users.UserName %>" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="userLastName">Фамилия</label>
+                    <input type="text" class="form-control" id="userLastName" name="UserLastName" value="<%= driver.Users.UserLastName %>" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="userEmail">Email</label>
+                    <input type="email" class="form-control" id="userEmail" name="UserEmail" value="<%= driver.Users.UserEmail %>" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="userPhone">Телефон</label>
+                    <input type="text" class="form-control" id="userPhone" name="UserPhone" value="<%= driver.Users.UserPhone %>" required>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Сохранить</button>
+                </form>
+        
+                <div class="success-message" id="successMessage" style="display: none;">Информация о профиле была успешно обновлена</div>
+              </div>
+            </div>
+          </div>
+        
+          <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+          <script>
+            document.getElementById('editProfileBtn').addEventListener('click', function() {
+            document.getElementById('editProfileForm').style.display = 'block';
+            this.style.display = 'none';
+            }); 
+if (typeof successMessage !== 'undefined') {
+  setTimeout(function() {
+    document.getElementById('successMessage').style.display = 'none';
+  }, 3000);
+
+}
+</script>
+</body>
+</html>

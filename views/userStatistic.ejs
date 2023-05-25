@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>История поездок</title>
+  <link rel="icon" href="/picture/icon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="/userStatistic.css"> 
+</head>
+<body> 
+  <h2 style="text-align: center;">Мои заказы</h2>
+  <a href="https://localhost/api/profile" style="text-decoration:none;" class="floating-button">Профиль</a></br>
+    <a href="https://localhost/api/order" style="text-decoration:none;" class="floating-button1">Главная</a> 
+  <div class="line"></div>
+  <% if (data.length === 0) { %>
+    <p>Заказов не найдено.</p>
+  <% } else { %>
+    <% data.sort((a, b) => new Date(b.OrderDate) - new Date(a.OrderDate)); %>
+    <% let currentDate = null; %>
+    <div class="trips-container">
+      <% data.forEach((trip) => {
+        const tripDate = new Date(trip.OrderDate);
+        const [tripHours, minutes] = trip.OrderTime.split(':');
+        tripDate.setHours(tripHours);
+        tripDate.setMinutes(minutes);
+        const options = { weekday: 'long', day: '2-digit', month: 'long' };
+        const formattedDate = tripDate.toLocaleDateString('ru-RU', options);
+        if (currentDate !== formattedDate) {
+          currentDate = formattedDate;
+      %>
+          <div class="date"><%= formattedDate %></div>
+      <% } %>
+      <div class="trip">
+        <div class="time">
+          <% let timeLabel = '';
+            if (tripHours >= 23 || tripHours < 4) {
+              timeLabel = 'Поездка ночью, в';
+            } else if (tripHours >= 4 && tripHours < 12) {
+              timeLabel = 'Поездка утром, в'; 
+            } else if (tripHours >= 12 && tripHours < 18) {
+              timeLabel = 'Поездка днем, в';
+            } else {
+              timeLabel = 'Поездка вечером, в';
+            }
+          %>
+          <span class="time-label <%= timeLabel.toLowerCase().replace(' ', '-') %>"><%= timeLabel %>  <%= trip.OrderTime %>. Поездка: <%= trip.OrderStatus%>а</span>
+        </div>
+        <div class="content">
+          <p><%= trip.OrderCost %> Br, <%= trip.AdressFrom %>, <%= trip.AdressTo %></p>
+          <img src="/picture/129.png">
+        </div>
+      </div>
+      <% }); %> 
+  <% } %>
+</body>
+</html>
+  

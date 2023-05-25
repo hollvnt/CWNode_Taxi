@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Список заказов</title>
+    <link rel="icon" href="/picture/icon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    
+  </head>
+  <body>
+    <a class="btn btn-primary" href="https://localhost/api/driverProfile" style="position: absolute; top: 20px; left: 20px;">Профиль</a>
+    <a class="btn btn-primary" href="https://localhost/api/driverLogin" style="position: absolute; top: 20px; left: 120px;">Выйти</a>
+    <div class="container">
+      <h1 style="text-align: center;">Список заказов</h1>
+
+      <table class="table table-striped">
+        <thead>
+          <tr> 
+            <th>Адрес отправления</th> 
+            <th>Дата заказа</th>
+            <th>Время заказа</th>
+            <th>Комментарий</th> 
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% orders.forEach(order => { %>
+            <% if (order.OrderStatus === 'created') { %>
+              <tr> 
+                <td><%= order.AdressFrom %></td> 
+                <td><%= order.OrderDate.toLocaleDateString() %></td>
+                <td><%= order.OrderTime.toLocaleTimeString() %></td>
+                <td><%= order.OrderComment %></td> 
+                <td>
+                  <form action="/api/acceptOrder" method="post" onsubmit="this.action='/api/acceptOrder';">
+                    <input type="hidden" name="OrderID" value="<%= order.OrderID %>">
+                    <button type="submit" name="action" value="accept" class="btn btn-primary">Принять</button> 
+                  </form>
+                </td>
+              </tr>
+            <% } %>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <script>
+      const socket = io();
+
+      socket.on('orderAccepted', (data) => {
+        const orderID = data.orderID;
+        const driverID = data.driverID;
+        const orderStatusElement = document.getElementById(`orderStatus-${orderID}`);
+
+        if (orderStatusElement) {
+          orderStatusElement.textContent = 'Водитель принял заказ';
+        }
+      });
+    </script>
+  </body>
+</html>
+

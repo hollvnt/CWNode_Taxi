@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Авторизация водителя</title>
+  <link rel="icon" href="/picture/icon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="/driverIndex.css"> 
+</head>
+<body>
+  <div id="login-container">
+    <img src="/picture/4344552.png">
+    <h2 class="auth">Авторизация водителем</h2>
+    <form method="POST" action="/api/driverLogin">
+      <div class="input-wrapper">
+        <input type="email" placeholder="Email" id="UserEmail" name="UserEmail" required>
+      </div>
+      <br>
+      <div class="input-wrapper">
+        <input type="password" placeholder="Пароль" id="UserPassword" name="UserPassword" required>
+      </div>
+      <br><br>
+      <input type="submit" value="Войти" class="floating-button"></br>
+      <a class="link" href="https://localhost">На главную</a>
+    </form>
+  </div>
+  <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      const errorMessage = urlParams.get('error');
+    
+      if (errorMessage) {
+        showNotification(errorMessage);
+        history.replaceState(null, document.title, window.location.pathname);
+      }
+    
+      function showNotification(message) {
+        const notification = document.createElement('div');
+        notification.classList.add('notification');
+        notification.textContent = message;
+        document.body.appendChild(notification);
+    
+        setTimeout(function () {
+          notification.classList.add('hide');
+          setTimeout(function () {
+            document.body.removeChild(notification);
+          }, 500);
+        }, 5000);
+      }
+  </script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Профиль</title>
+    <link rel="icon" href="/picture/icon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/userProfile.css"> 
+  </head> 
+    <h1 class="profile" style="">Профиль</h1>
+    <link rel="icon" href="/picture/icon.ico" type="image/x-icon">
+    <div> 
+    </div>
+    <form id="updateProfileForm" enctype="multipart/form-data">
+      <div class="container">
+      <label for="UserName">Имя:</label>
+      <input style="border: none ; outline:none;" placeholder="Измените имя" type="text" name="UserName" value="<%= user.UserName %>" required>
+
+      <label for="UserLastName">Фамилия:</label>
+      <input style="border: none ; outline:none;" placeholder="Измените фамилию" type="text" name="UserLastName" value="<%= user.UserLastName %>" required>
+
+      <label for="UserEmail">Email:</label>
+      <input style="border: none ; outline:none;" placeholder="Измените почту" type="email" name="UserEmail" value="<%= user.UserEmail %>" required> 
+      
+      <label for="UserPhone">Телефон:</label>
+      <input style="border: none ; outline:none;" placeholder="Измените телефон" type="text" name="UserPhone" value="<%= user.UserPhone %>" required> 
+      <button type="submit" class="custom-btn btn-16" >Изменить</button>
+    </form> 
+
+    
+    <div class="success-message" id="successMessage">Информация профиля была успешно обновлена</div>
+  </div> 
+    <a href="https://localhost/api/statistics" style="text-decoration:none;" class="floating-button">История</a>
+    <a href="https://localhost/api/order" style="text-decoration:none;" class="floating-button1">Главная</a> 
+    <script>
+      const form = document.getElementById('updateProfileForm');
+const successMessage = document.getElementById('successMessage'); 
+
+form.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const formData = new FormData(form);
+  const data = JSON.stringify(Object.fromEntries(formData.entries()));
+
+  const response = await fetch('/api/userProfile', {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: data
+  });
+
+  if (response.ok) {
+    const responseData = await response.json();
+    successMessage.style.display = 'block'; 
+
+    setTimeout(() => {
+      successMessage.style.display = 'none';
+    }, 5000);
+  } else {
+    alert('Failed to update profile');
+  }
+});
+
+    </script>
+  </body>
+</html>

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
+    <link rel="stylesheet" href="m.css">
+    <title>Такси Гермес</title> 
+    <link rel="icon" href="/picture/icon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/main.css"> 
+    <style>
+      
+</style>
+  </head>
+  <body>
+    <div id="map-test" class="map"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.js"></script> 
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=90accdb3-43ce-4905-9b9b-8fd8be3149bd&lang=ru_RU"> </script> 
+
+    <script>
+      ymaps.ready(function() {
+        let myMap = new ymaps.Map('map-test', {
+          center: [59.91795236804815, 30.304908500000003],
+          zoom: 15,
+          controls: ['routePanelControl']
+        });
+        let control = myMap.controls.get('routePanelControl');
+        let city = 'Минск ';
+    
+        const options = {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0
+        };
+    
+        function success(pos) {
+          const crd = pos.coords;
+          console.log(`Latitude : ${crd.latitude}`);
+          console.log(`Longitude: ${crd.longitude}`);
+          let reverseGeocoder = ymaps.geocode([crd.latitude, crd.longitude]);
+          let locationText = null;
+          reverseGeocoder.then(function(res) {
+            locationText = res.geoObjects.get(0).properties.get('text');
+            console.log(locationText);
+            control.routePanel.state.set({
+              type: 'masstransit',
+              fromEnabled: true,
+              from: locationText,
+              toEnabled: true,
+              to: locationText,
+            });
+          });
+          document.getElementById('AdressFrom').value = locationText;
+          console.log(locationText);
+          control.routePanel.options.set({
+            types: {
+              masstransit: true,
+              pedestrian: true,
+              taxi: true
+            }
+          });
+        }
+    
+        function error(err) {
+          console.warn(`ERROR(${err.code}): ${err.message}`);
+        }
+    
+        navigator.geolocation.getCurrentPosition(success, error, options);
+    
+        document.querySelector("form").addEventListener("submit", function(event) {
+          event.preventDefault();
+          let from = control.routePanel.state.get("from");
+          let to = control.routePanel.state.get("to");
+    
+          let geocodeFrom = ymaps.geocode(from);
+          let geocodeTo = ymaps.geocode(to);
+    
+          Promise.all([geocodeFrom, geocodeTo]).then(function(values) {
+            let fromCoords = values[0].geoObjects.get(0).geometry.getCoordinates();
+            let toCoords = values[1].geoObjects.get(0).geometry.getCoordinates();
+    
+            calculatePrice(fromCoords, toCoords);
+          });
+    
+          let fromInput = document.createElement("input");
+          fromInput.setAttribute("type", "hidden");
+          fromInput.setAttribute("name", "AdressFrom");
+          fromInput.setAttribute("value", from);
+          this.appendChild(fromInput);
+    
+          let toInput = document.createElement("input");
+          toInput.setAttribute("type", "hidden");
+          toInput.setAttribute("name", "AdressTo");
+          toInput.setAttribute("value", to);
+          this.appendChild(toInput);
+    
+          this.submit();
+        });
+    
+        function calculatePrice(fromCoords, toCoords) {
+  let distance = ymaps.coordSystem.geo.getDistance(fromCoords, toCoords);
+  let price = Math.ceil(distance / 1000); 
+
+  let tariffA = document.getElementById("tariffA");
+  let tariffB = document.getElementById("tariffB");
+  let tariffC = document.getElementById("tariffC");
+
+  let priceA = 1; 
+  let priceB = 2; 
+  let priceC = 3; 
+
+  if (tariffA.checked) {
+    document.getElementById("priceA").textContent = price * priceA;
+  } else {
+    document.getElementById("priceA").textContent = "";
+  }
+
+  if (tariffB.checked) {
+    document.getElementById("priceB").textContent = price * priceB;
+  } else {
+    document.getElementById("priceB").textContent = "";
+  }
+
+  if (tariffC.checked) {
+    document.getElementById("priceC").textContent = price * priceC;
+  } else {
+    document.getElementById("priceC").textContent = "";
+  }
+
+  let selectedTariff = tariffA.checked ? "A" : tariffB.checked ? "B" : tariffC.checked ? "C" : "";
+
+  let orderCost;
+  if (selectedTariff === "A") {
+    orderCost = price * priceA;
+  } else if (selectedTariff === "B") {
+    orderCost = price * priceB;
+  } else if (selectedTariff === "C") {
+    orderCost = price * priceC;
+  } else {
+    orderCost = 0; 
+  }
+
+  document.getElementById("OrderCost").value = orderCost;
+}
+
+        function updatePrice() {
+          let from = control.routePanel.state.get("from");
+          let to = control.routePanel.state.get("to");
+    
+          let geocodeFrom = ymaps.geocode(from);
+          let geocodeTo = ymaps.geocode(to);
+    
+          Promise.all([geocodeFrom, geocodeTo]).then(function(values) {
+            let fromCoords = values[0].geoObjects.get(0).geometry.getCoordinates();
+            let toCoords = values[1].geoObjects.get(0).geometry.getCoordinates();
+    
+            calculatePrice(fromCoords, toCoords);
+          });
+        }
+    
+        document.getElementById("tariffA").addEventListener("change", updatePrice);
+        document.getElementById("tariffB").addEventListener("change", updatePrice);
+        document.getElementById("tariffC").addEventListener("change", updatePrice);
+      });
+    </script>
+    
+    
+    <div class="account">
+      <a href="https://localhost/api/profile" style="padding-left: 7px; padding-top: 10px;">
+        <img height="30px" width="30px" src="https://img.freepik.com/icones-gratuites/utilisateur_318-409668.jpg">
+      </a>
+    </div>
+    <!-- <div class="dr">
+      <img id="dr" src="/picture/dr.jpg">
+    </div> -->
+    <div class="logout">
+      <a href="https://localhost">
+        <img height="30px" width="30px" src="https://cdn-icons-png.flaticon.com/512/1286/1286853.png">
+      </a>
+    </div>
+    <h1>Create Order</h1>
+    <div class="backgroundElement">
+      <form id="orderForm" action="/api/order" method="POST">
+        <div class="orderDateBackground">
+          <div class="orderDate">
+            <label for="OrderTime">Время поездки</label><br>
+            <input type="time" style="border: none; outline:none;" id="OrderTime" name="OrderTime" required><br>
+            <label for="OrderDate" style="margin-top: 10px;">Дата поездки:</label><br>
+            <input type="date" id="OrderDate" style="border: none ; outline:none;" name="OrderDate" required><br>
+          </div>
+        </div>
+        <div class="orderComment">
+          <label for="OrderComment">Комментарий:</label><br>
+          <textarea id="OrderComment" name="OrderComment" style="border: none ; outline:none;" placeholder="Комментарий водителю"></textarea><br>
+        </div>
+        <div class="orderTariff">
+          <label for="OrderTariff" style="color: black">Выберете машину:</label><br>
+          <input type="radio" id="tariffA" name="OrderTariff" value="1" required onchange="updatePrice()">
+          <label for="tariffA">Эконом <span id="priceA"></span> руб</label><br>
+          <input type="radio" id="tariffB" name="OrderTariff" value="3" onchange="updatePrice()">
+          <label for="tariffB">Комфорт <span id="priceB"></span> руб</label><br>
+          <input type="radio" id="tariffC" name="OrderTariff" value="2" onchange="updatePrice()">
+          <label for="tariffC">Бизнес <span id="priceC"></span> руб</label><br>
+          <input type="hidden" id="OrderCost" name="OrderCost" readonly>
+        </div>
+        <div id="orderConfirmation">
+          <h2 id="confirmationText">Заказ оформлен</h2>
+        </div>
+      <div class="orderAccept"> 
+        <input type="submit" class="btn" value="ОФОРМИТЬ ЗАКАЗ">
+      </div>
+      </form>
+      <script src="/socket.io/socket.io.js"></script>
+      <script> 
+       document.querySelector('form').addEventListener('submit', function (event) {
+    const selectedDate = document.getElementById('OrderDate').value;
+    const selectedTime = document.getElementById('OrderTime').value;
+
+    const selectedDateTime = new Date(`${selectedDate}T${selectedTime}`);
+    const currentDateTime = new Date();
+
+    if (selectedDateTime <= currentDateTime) {
+      event.preventDefault(); 
+      alert('Пожалуйста, выберите время, которое идет после текущего времени.');
+    }
+  });
+      var today = new Date().toISOString().split("T")[0];
+  document.getElementById("OrderDate").setAttribute("min", today); 
+  var currentTime = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
+  document.getElementById("OrderTime").setAttribute("min", currentTime);
+  
+  const orderForm = document.getElementById('orderForm');
+
+orderForm.addEventListener('submit', async (event) => {
+  event.preventDefault(); 
+
+  const OrderTime = document.getElementById('OrderTime').value; 
+
+  const formData = {
+    OrderTime: OrderTime, 
+  };
+
+  try {
+    const response = await fetch('/api/orders', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (response.ok) {
+      // Заказ успешно создан
+      console.log('Заказ успешно создан');
+    } else {
+      // Ошибка при создании заказа
+      console.error('Ошибка при создании заказа');
+    }
+  } catch (error) {
+    console.error('Ошибка при выполнении запроса', error);
+  }
+});
+
+
+window.addEventListener('DOMContentLoaded', (event) => {
+  const orderConfirmation = document.getElementById('orderConfirmation');
+  const confirmationText = document.getElementById('confirmationText'); 
+  const orderStatus = localStorage.getItem('orderStatus');
+  const orderStatusTimestamp = localStorage.getItem('orderStatusTimestamp');
+  const currentTime = Math.floor(Date.now() / 1000); 
+
+  if (orderStatus && orderStatusTimestamp) {
+    const elapsedTime = currentTime - orderStatusTimestamp;
+
+    if (elapsedTime < 60) { 
+      orderConfirmation.style.opacity = 0;
+      orderConfirmation.style.display = 'block'; 
+      
+      setTimeout(() => {
+        orderConfirmation.style.opacity = 1;
+      }, 100);
+
+      confirmationText.textContent = orderStatus; 
+      startTimer(60 - elapsedTime, document.querySelector('#timer')); 
+    } else { 
+      localStorage.removeItem('orderStatus');
+      localStorage.removeItem('orderStatusTimestamp');
+    }
+  }
+});
+
+document.getElementById('orderForm').onsubmit = function(e) {
+  e.preventDefault(); 
+  const orderConfirmation = document.getElementById('orderConfirmation');
+  orderConfirmation.style.opacity = 0;
+  orderConfirmation.style.display = 'block'; 
+  setTimeout(() => {
+    orderConfirmation.style.opacity = 1;
+  }, 100);
+
+  confirmationText.textContent = 'Заказ оформлен';
+  startTimer(60, document.querySelector('#timer')); 
+  localStorage.setItem('orderStatus', 'Заказ оформлен');
+  localStorage.setItem('orderStatusTimestamp', Math.floor(Date.now() / 1000)); 
+};
+
+function startTimer(duration, display) {
+  let timer = duration, minutes, seconds;
+  setInterval(function () {
+    minutes = parseInt(timer / 60, 10);
+    seconds = parseInt(timer % 60, 10);
+
+    minutes = minutes < 10 ? "0" + minutes : minutes;
+    seconds = seconds < 10 ? "0" + seconds : seconds;
+
+    display.textContent = minutes + ":" + seconds;
+
+    if (--timer < 0) {
+      timer = duration;
+    }
+  }, 1000);
+} 
+
+          // function generateTariffPrices() { 
+          //   const tariffAPrice = Math.floor(Math.random() * (8 - 2.5 + 1) + 2.5); 
+          //   const tariffBPrice = Math.floor(Math.random() * (15 - 6 + 1) + 6); 
+          //   const tariffCPrice = Math.floor(Math.random() * (30 - 12 + 1) + 12); 
+            
+          //   document.getElementById('priceA').textContent = tariffAPrice; 
+          //   document.getElementById('priceB').textContent = tariffBPrice; 
+          //   document.getElementById('priceC').textContent = tariffCPrice; 
+            
+          //   const radioButtons = document.getElementsByName('OrderTariff'); 
+            
+          //   radioButtons.forEach(radioButton => { 
+          //     radioButton.addEventListener('click', () => { 
+          //       const selectedTariff = document.querySelector('input[name="OrderTariff"]:checked').value; 
+          //       const selectedTariffPrice = selectedTariff === '1' ? tariffAPrice : selectedTariff === '2' ? tariffCPrice : tariffBPrice; 
+          //       document.getElementById('OrderCost').value = selectedTariffPrice; 
+          //       }); 
+          //     }); 
+          //   } 
+          //   window.onload = generateTariffPrices; 
+
+          const socket = io();
+
+          socket.on('orderAccepted', (data) => {
+  const orderID = data.orderID;
+  const driverID = data.driverID;
+  const confirmationText = document.getElementById('confirmationText');
+
+  if (confirmationText) {
+    confirmationText.textContent = `Водитель принял заказ ${orderID}`;
+  }
+});
+
+  
+
+          </script>
+      
+      
+  </body>
+</html>
